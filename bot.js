@@ -1,7 +1,10 @@
 import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import ChatGPTBot from './chatgpt.js';
-import typingDecorator from './utils/typingDecorator.js';
+import {
+  setTypingAnimationDecorator,
+  preventBackgroundMessagesDecorator,
+} from './utils/decorators.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -12,34 +15,39 @@ const bot = new TelegramBot(BOT_SECRET_KEY, { polling: true });
 
 bot.setMyCommands([
   { command: '/start', description: 'Start chatting' },
-  { command: '/new_chat', description: 'Start new chat' },
 ]);
 
 // set typing animation to bot.sendMessage
-bot.sendMessage = typingDecorator(bot.sendMessage, bot);
+bot.sendMessage = setTypingAnimationDecorator(bot.sendMessage, bot);
 
-// handling /start
+// handle /start command
 async function start(msg) {
-  const response = await chatGPT.chat('hi');
-  await bot.sendMessage(msg.chat.id, response);
-}
-
-// handling /new_chat
-async function newChat(msg) {
   chatGPT.clearConversation();
-  const response = await chatGPT.chat('hi');
-  await bot.sendMessage(msg.chat.id, response);
+
+  const meetingMsg = `🤖 ChatGPT bot.
+Ask me something or send me voice so I can work with it.`;
+
+  await bot.sendMessage(msg.chat.id, meetingMsg);
 }
 
-// run bot
-bot.on('message', async (msg) => {
-  // matching commands handling
+// main handler (handles all text messages)
+async function mainHandler(msg) {
+  // handle matching commands
   if (msg.text === '/start') return start(msg);
-  if (msg.text === '/new_chat') return newChat(msg);
 
   const response = chatGPT.chat(msg.text);
   const chatId = msg.chat.id;
   await bot.sendMessage(chatId, response);
-});
+}
+
+// prevent other messages while processing current message
+mainHandler = preventBackgroundMessagesDecorator(mainHandler, bot);
+
+// run bot
+bot.on('message', mainHandler);
 
 
+// TODO: implement voice recognition using Vosk
+// bot.on('voice', async (msg) => {
+//   bot.sendMessage(msg.chat.id, msg.voice.duration);
+// });
