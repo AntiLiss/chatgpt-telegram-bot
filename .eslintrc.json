@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": "airbnb-base",
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "prefer-const": 0,
+        "linebreak-style": 0,
+        "no-multiple-empty-lines": 0,
+        "no-console": 0,
+        "func-names": 0,
+        "no-plusplus": 0,
+        "no-restricted-syntax": 0,
+        "max-len": ["error", { "code": 80 }],
+        "strict": 0,
+        "max-classes-per-file": 0
+    }
+}
