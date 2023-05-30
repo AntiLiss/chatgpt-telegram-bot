@@ -30,7 +30,7 @@ Ask me something or send me voice so I can work with it.`;
   await bot.sendMessage(msg.chat.id, meetingMsg);
 }
 
-// main handler (handles all text messages)
+// main handler
 async function mainHandler(msg) {
   // handle matching commands
   if (msg.text === '/start') return start(msg);

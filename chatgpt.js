@@ -14,33 +14,33 @@ const api = new ChatGPTUnofficialProxyAPI({
 });
 
 export default class ChatGPTBot {
-  response = null;
+  chatHistory = null;
 
   // TODO: implement converstation mode setting
   // async selectMode(mode) {
   //   let res = await api.sendMessage(`You are now ${mode}`);
-  //   this.response = res;
+  //   this.chatHistory = res;
   // }
 
   async chat(message) {
     // continue the conversation in context if it exists
-    if (this.response) {
+    if (this.chatHistory) {
       let res = await api.sendMessage(message, {
-        conversationId: this.response.conversationId,
-        parentMessageId: this.response.parentMessageId,
+        conversationId: this.chatHistory.conversationId,
+        parentMessageId: this.chatHistory.parentMessageId,
         // onProgress: (partialResponse) => console.log(partialResponse.text),
       });
-      this.response = res;
+      this.chatHistory = res;
       return res.text;
     }
 
     let res = await api.sendMessage(message);
-    this.response = res.text;
+    this.chatHistory = res;
     return res.text;
   }
 
   clearConversation() {
-    this.response = null;
+    this.chatHistory = null;
   }
 }
 
