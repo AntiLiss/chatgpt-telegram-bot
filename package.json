@@ -15,11 +15,8 @@
     "eslint-plugin-import": "^2.27.5"
   },
   "dependencies": {
-    "axios": "^1.4.0",
     "chatgpt": "^5.2.4",
     "dotenv": "^16.0.3",
-    "midjourney-client": "^1.0.8",
-    "node-telegram-bot-api": "^0.61.0",
     "telegraf": "^4.12.2"
   }
 }

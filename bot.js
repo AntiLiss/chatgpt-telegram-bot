@@ -1,53 +1,52 @@
+import telegraf, { Telegraf } from 'telegraf';
 import dotenv from 'dotenv';
-import TelegramBot from 'node-telegram-bot-api';
 import ChatGPTBot from './chatgpt.js';
-import {
-  setTypingAnimationDecorator,
-  preventBackgroundMessagesDecorator,
-} from './utils/decorators.js';
+import { setTyping, preventBackgroundMessages } from './utils/decorators.js';
 
 dotenv.config({ path: './config.env' });
 
 const { BOT_SECRET_KEY } = process.env;
 
+const bot = new telegraf.Telegraf(BOT_SECRET_KEY);
 const chatGPT = new ChatGPTBot();
-const bot = new TelegramBot(BOT_SECRET_KEY, { polling: true });
 
-bot.setMyCommands([
+const MEETING_MESSAGE = `🤖 ChatGPT bot.
+Ask me something or send me voice so I can work with it.`;
+
+bot.telegram.setMyCommands([
   { command: '/start', description: 'Start chatting' },
 ]);
 
-// set typing animation to bot.sendMessage
-bot.sendMessage = setTypingAnimationDecorator(bot.sendMessage, bot);
+bot.command('start', async (ctx) => {
+  try {
+    chatGPT.clearConversation();
+    await ctx.reply(MEETING_MESSAGE);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
-// handle /start command
-async function start(msg) {
-  chatGPT.clearConversation();
-
-  const meetingMsg = `🤖 ChatGPT bot.
-Ask me something or send me voice so I can work with it.`;
-
-  await bot.sendMessage(msg.chat.id, meetingMsg);
+// send ChatGPT's message to user
+async function sendMsg(ctx, msg) {
+  try {
+    let response = await chatGPT.chat(msg);
+    await ctx.reply(response);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-// main handler
-async function mainHandler(msg) {
-  // handle matching commands
-  if (msg.text === '/start') return start(msg);
+// sendMsg = preventBackgroundMessages(sendMsg);
+sendMsg = setTyping(sendMsg);
 
-  const response = chatGPT.chat(msg.text);
-  const chatId = msg.chat.id;
-  await bot.sendMessage(chatId, response);
-}
+bot.on('message', async (ctx) => {
+  try {
+    // await ctx.reply('✅ Working on it...');
+    sendMsg(ctx, ctx.message.text);
+  } catch (err) {
+    console.error(err);
+    await ctx.reply('⚠️ Some error...');
+  }
+});
 
-// prevent other messages while processing current message
-mainHandler = preventBackgroundMessagesDecorator(mainHandler, bot);
-
-// run bot
-bot.on('message', mainHandler);
-
-
-// TODO: implement voice recognition using Vosk
-// bot.on('voice', async (msg) => {
-//   bot.sendMessage(msg.chat.id, msg.voice.duration);
-// });
+bot.launch();
