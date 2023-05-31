@@ -10,23 +10,30 @@ const { BOT_SECRET_KEY } = process.env;
 const bot = new telegraf.Telegraf(BOT_SECRET_KEY);
 const chatGPT = new ChatGPTBot();
 
-const MEETING_MESSAGE = `🤖 ChatGPT bot.
-Ask me something or send me voice so I can work with it.`;
+export const botMessages = new Map(Object.entries({
+  start: `🤖 ChatGPT bot.
+Ask me something or send me voice so I can work with it.`,
+  work: '✅ Working on it...',
+  wait: '⏳ Wait until I finish!',
+  error: '⚠️ Unknown error!',
+}));
 
+// Set bot commands
 bot.telegram.setMyCommands([
   { command: '/start', description: 'Start chatting' },
 ]);
 
+// Handle /start command
 bot.command('start', async (ctx) => {
   try {
     chatGPT.clearConversation();
-    await ctx.reply(MEETING_MESSAGE);
+    await ctx.reply(botMessages.get('start'));
   } catch (err) {
     console.error(err);
   }
 });
 
-// send ChatGPT's message to user
+// Send ChatGPT's message to user
 async function sendMsg(ctx, msg) {
   try {
     let response = await chatGPT.chat(msg);
@@ -36,17 +43,20 @@ async function sendMsg(ctx, msg) {
   }
 }
 
+// Send typing animation when sending messages
 sendMsg = setTyping(sendMsg);
 
+// Handle incoming messages
 bot.on('message', preventBackgroundMessages(async (ctx) => {
   try {
-    await ctx.reply('✅ Working on it...');
+    await ctx.reply(botMessages.get('work'));
     const res = await sendMsg(ctx, ctx.message.text);
     await ctx.reply(res);
   } catch (err) {
     console.error(err);
-    ctx.reply('⚠️ Unknown error!');
+    ctx.reply(botMessages.get('error'));
   }
 }));
 
+// Launch the bot
 bot.launch();

@@ -25,7 +25,7 @@ export default class ChatGPTBot {
     try {
       // continue the conversation if it exists
       if (this.chatHistory) {
-        let res = await api.sendMessage(message, {
+        const res = await api.sendMessage(message, {
           conversationId: this.chatHistory.conversationId,
           parentMessageId: this.chatHistory.parentMessageId,
           // onProgress: (partialResponse) => console.log(partialResponse.text),
@@ -34,7 +34,7 @@ export default class ChatGPTBot {
         return String(res.text);
       }
 
-      let res = await api.sendMessage(message);
+      const res = await api.sendMessage(message);
       this.chatHistory = res;
       return String(res.text);
     } catch (err) {

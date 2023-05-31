@@ -1,3 +1,5 @@
+import { botMessages } from "../bot.js";
+
 // send typing animation
 export function setTyping(func) {
   return async function (ctx, ...args) {
@@ -19,7 +21,7 @@ export function preventBackgroundMessages(func) {
 
   return async function (ctx, ...args) {
     if (isProcessing) {
-      await ctx.reply('🛑 Wait until I finish!');
+      await ctx.reply(botMessages.get('wait'));
       return;
     }
     isProcessing = true;
