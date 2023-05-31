@@ -7,8 +7,9 @@ export function setTyping(func) {
       await ctx.sendChatAction('typing');
     }, 2000);
 
-    await func.call(this, ctx, ...args);
+    const res = await func.call(this, ctx, ...args);
     clearInterval(intervalId);
+    return res;
   };
 }
 
@@ -16,13 +17,14 @@ export function setTyping(func) {
 export function preventBackgroundMessages(func) {
   let isProcessing = false;
 
-  return async function (ctx, msg, ...args) {
+  return async function (ctx, ...args) {
     if (isProcessing) {
       await ctx.reply('🛑 Wait until I finish!');
       return;
     }
     isProcessing = true;
-    await func.call(this, ctx, msg, ...args);
-    isProcessing = false;
+    func.call(this, ctx, ...args)
+      .then(() => { isProcessing = false; });
   };
 }
+
