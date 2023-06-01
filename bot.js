@@ -33,30 +33,20 @@ bot.command('start', async (ctx) => {
   }
 });
 
-// Send ChatGPT's message to user
-async function sendMsg(ctx, msg) {
-  try {
-    let response = await chatGPT.chat(msg);
-    return response;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// Send typing animation when sending messages
-sendMsg = setTyping(sendMsg);
-
-// Handle incoming messages
-bot.on('message', preventBackgroundMessages(async (ctx) => {
+// text handler
+async function handleText(ctx) {
   try {
     await ctx.reply(botMessages.get('work'));
-    const res = await sendMsg(ctx, ctx.message.text);
+    const res = await chatGPT.chat(ctx.message.text);
     await ctx.reply(res);
   } catch (err) {
     console.error(err);
     ctx.reply(botMessages.get('error'));
   }
-}));
+}
+
+// Handle incoming messages
+bot.on('message', preventBackgroundMessages(setTyping(handleText)));
 
 // Launch the bot
 bot.launch();

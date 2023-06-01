@@ -1,4 +1,4 @@
-import { botMessages } from "../bot.js";
+import { botMessages } from '../bot.js';
 
 // send typing animation
 export function setTyping(func) {
@@ -7,7 +7,7 @@ export function setTyping(func) {
 
     const intervalId = setInterval(async () => {
       await ctx.sendChatAction('typing');
-    }, 2000);
+    }, 1000);
 
     const res = await func.call(this, ctx, ...args);
     clearInterval(intervalId);
