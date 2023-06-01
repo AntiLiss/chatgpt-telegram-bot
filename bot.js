@@ -1,6 +1,6 @@
 import telegraf from 'telegraf';
 import dotenv from 'dotenv';
-import ChatGPTBot from './chatgpt.js';
+import ChatGPTAPI from './chatgpt.js';
 import { setTyping, preventBackgroundMessages } from './utils/decorators.js';
 
 dotenv.config({ path: './config.env' });
@@ -8,7 +8,7 @@ dotenv.config({ path: './config.env' });
 const { BOT_SECRET_KEY } = process.env;
 
 const bot = new telegraf.Telegraf(BOT_SECRET_KEY);
-const chatGPT = new ChatGPTBot();
+const chatGPTApi = new ChatGPTAPI();
 
 export const botMessages = new Map(Object.entries({
   start: `🤖 ChatGPT bot.
@@ -26,18 +26,18 @@ bot.telegram.setMyCommands([
 // Handle /start command
 bot.command('start', async (ctx) => {
   try {
-    chatGPT.clearConversation();
+    chatGPTApi.clearConversation();
     await ctx.reply(botMessages.get('start'));
   } catch (err) {
     console.error(err);
   }
 });
 
-// text handler
+// Text handler
 async function handleText(ctx) {
   try {
     await ctx.reply(botMessages.get('work'));
-    const res = await chatGPT.chat(ctx.message.text);
+    const res = await chatGPTApi.chat(ctx.message.text);
     await ctx.reply(res);
   } catch (err) {
     console.error(err);
@@ -45,8 +45,11 @@ async function handleText(ctx) {
   }
 }
 
-// Handle incoming messages
-bot.on('message', preventBackgroundMessages(setTyping(handleText)));
+// Modify it so send typing and prevent other messages
+handleText = setTyping(handleText);
+handleText = preventBackgroundMessages(handleText);
 
-// Launch the bot
+// Handle incoming messages
+bot.on('message', handleText);
+
 bot.launch();

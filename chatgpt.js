@@ -5,17 +5,17 @@ dotenv.config({ path: 'config.env' });
 
 const { ACCESS_TOKEN, CHATGPT_PROXY_URL } = process.env;
 
-// connect to chatgpt api
+// Connect to chatgpt api
 const api = new ChatGPTUnofficialProxyAPI({
   accessToken: ACCESS_TOKEN,
   apiReverseProxyUrl: CHATGPT_PROXY_URL,
 });
 
-// class to use chatgpt api
-export default class ChatGPTBot {
+// Class to use chatgpt api
+export default class ChatGPTAPI {
   chatHistory = null;
 
-  // TODO: implement converstation mode setting
+  // TODO: Implement converstation mode setting
   // async selectMode(mode) {
   //   let res = await api.sendMessage(`You are now ${mode}`);
   //   this.chatHistory = res;
@@ -23,7 +23,7 @@ export default class ChatGPTBot {
 
   async chat(message) {
     try {
-      // continue the conversation if it exists
+      // Continue the conversation if it exists
       if (this.chatHistory) {
         const res = await api.sendMessage(message, {
           conversationId: this.chatHistory.conversationId,

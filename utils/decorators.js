@@ -1,6 +1,6 @@
 import { botMessages } from '../bot.js';
 
-// send typing animation
+// Send typing animation
 export function setTyping(func) {
   return async function (ctx, ...args) {
     await ctx.sendChatAction('typing');
@@ -9,13 +9,12 @@ export function setTyping(func) {
       await ctx.sendChatAction('typing');
     }, 1000);
 
-    const res = await func.call(this, ctx, ...args);
+    await func.call(this, ctx, ...args);
     clearInterval(intervalId);
-    return res;
   };
 }
 
-// prevent the function call until it's not done
+// Prevent the function call until it's not done
 export function preventBackgroundMessages(func) {
   let isProcessing = false;
 
@@ -25,6 +24,8 @@ export function preventBackgroundMessages(func) {
       return;
     }
     isProcessing = true;
+
+    // Use promise to avoid blocking the bot when function re-calls
     func.call(this, ctx, ...args)
       .then(() => { isProcessing = false; });
   };
