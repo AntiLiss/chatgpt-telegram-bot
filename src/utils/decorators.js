@@ -1,4 +1,4 @@
-import { botMessages } from '../bot.js';
+import { botMessages } from '../config.js';
 
 // Send typing animation
 export function setTyping(func) {

@@ -1,9 +1,5 @@
 import { ChatGPTUnofficialProxyAPI } from 'chatgpt';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: 'config.env' });
-
-const { ACCESS_TOKEN, CHATGPT_PROXY_URL } = process.env;
+import { ACCESS_TOKEN, CHATGPT_PROXY_URL } from '../config.js';
 
 // Connect to chatgpt api
 const api = new ChatGPTUnofficialProxyAPI({
@@ -11,8 +7,8 @@ const api = new ChatGPTUnofficialProxyAPI({
   apiReverseProxyUrl: CHATGPT_PROXY_URL,
 });
 
-// Class to use chatgpt api
-export default class ChatGPTAPI {
+// Allows to use ChatGPT API
+class ChatGPTAPI {
   chatHistory = null;
 
   // TODO: Implement converstation mode setting
@@ -21,6 +17,11 @@ export default class ChatGPTAPI {
   //   this.chatHistory = res;
   // }
 
+  /**
+   * Returns answer from chatgpt to the message
+   * @param {String} message - Input message
+   * @returns {String} ChatGPT answer (text)
+   */
   async chat(message) {
     try {
       // Continue the conversation if it exists
@@ -38,7 +39,7 @@ export default class ChatGPTAPI {
       this.chatHistory = res;
       return String(res.text);
     } catch (err) {
-      console.error(err);
+      return console.error(err);
     }
   }
 
@@ -47,3 +48,8 @@ export default class ChatGPTAPI {
   }
 }
 
+/**
+ * Object to use ChatGPT API
+ */
+const chatGPTApi = new ChatGPTAPI();
+export default chatGPTApi;
