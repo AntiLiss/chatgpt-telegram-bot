@@ -6,8 +6,11 @@ import { setTyping, preventBackgroundMessages } from '../utils/decorators.js';
 export async function handleText(ctx) {
   try {
     await ctx.reply(botMessages.get('work'));
-    const res = await chatGPTApi.chat(ctx.message.text);
-    await ctx.reply(res);
+
+    // const res = await chatGPTApi.chat(ctx.message.text);
+    await new Promise((res) => setTimeout(res, 8000));
+
+    await ctx.reply('res');
   } catch (err) {
     console.error(err);
     ctx.reply(botMessages.get('error'));

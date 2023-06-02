@@ -7,11 +7,13 @@ const api = new ChatGPTUnofficialProxyAPI({
   apiReverseProxyUrl: CHATGPT_PROXY_URL,
 });
 
-// Allows to use ChatGPT API
+// ONE PROBLEM!!! IT IS JUST ONE ACCOUNT SESSION!
+// It can only be used by one user. So this package is pretty useless
 class ChatGPTAPI {
+  // TODO: Make separate chatHistory for each user
   chatHistory = null;
 
-  // TODO: Implement converstation mode setting
+  // TODO: Implement conversation mode setting
   // async selectMode(mode) {
   //   let res = await api.sendMessage(`You are now ${mode}`);
   //   this.chatHistory = res;

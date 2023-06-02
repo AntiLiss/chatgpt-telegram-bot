@@ -14,6 +14,9 @@ bot.telegram.setMyCommands([
 bot.command('start', commandController.handleStart);
 
 // Handle messages
-bot.on('message', messageController.handleText);
+bot.on('message', async (ctx) => {
+  // Call handler asynchronously
+  messageController.handleText(ctx);
+});
 
 bot.launch();
