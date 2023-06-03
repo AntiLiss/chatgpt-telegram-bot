@@ -8,7 +8,7 @@ export async function handleText(ctx) {
     await ctx.reply(botMessages.get('work'));
 
     // const res = await chatGPTApi.chat(ctx.message.text);
-    await new Promise((res) => setTimeout(res, 8000));
+    await new Promise((res) => setTimeout(res, 5000));
 
     await ctx.reply('res');
   } catch (err) {

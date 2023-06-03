@@ -15,7 +15,6 @@ bot.command('start', commandController.handleStart);
 
 // Handle messages
 bot.on('message', async (ctx) => {
-  // Call handler asynchronously
   messageController.handleText(ctx);
 });
 

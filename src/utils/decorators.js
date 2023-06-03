@@ -17,38 +17,16 @@ export function setTyping(func) {
 // Prevent the function call until it's not done
 export function preventBackgroundMessages(func) {
   // Map to track per-user processing state
-  const userProcessingState = new Map();
+  const processingUsers = new Map();
 
   return async function (ctx, ...args) {
-    const userId = ctx.from.id; // Get the user ID
-    if (userProcessingState.has(userId)) {
+    const userId = ctx.from.id;
+    if (processingUsers.has(userId)) {
       await ctx.reply(botMessages.get('wait'));
       return;
     }
-
-    // Set the processing state for the user
-    userProcessingState.set(userId, true);
-
+    processingUsers.set(userId, true);
     await func.call(this, ctx, ...args);
-
-    // Clear the processing state for the user
-    userProcessingState.delete(userId);
+    processingUsers.delete(userId);
   };
 }
-
-// Old bad version
-// export function preventBackgroundMessages(func) {
-//   let isProcessing = false;
-
-//   return async function (ctx, ...args) {
-//     if (isProcessing) {
-//       await ctx.reply(botMessages.get('wait'));
-//       return;
-//     }
-//     isProcessing = true;
-
-//     // Use promise to avoid blocking the bot when function re-calls
-//     await func.call(this, ctx, ...args);
-//     isProcessing = false;
-//   };
-// }
